@@ -1,5 +1,11 @@
-const {padZero} = require('./utils')
+const {
+  padZero,
+  parseFileName,
+  getDateTimeString,
+  getRandomStr
+} = require('./utils')
 const chinesenum = require("chinesenum")
+const fs = require('fs-extra')
 
 const nmDown = (filename, options = {}) => {
   let newName = filename.replace(/-P(\d+)\s/ig, (match, p1) => {
@@ -35,8 +41,18 @@ const custom1 = (filename, options = {}) => {
   return newName
 }
 
+const obfuscation = (filename, options = {}) => {
+  const {absPath} = options
+  const stat = fs.statSync(absPath)
+  const {
+    prefix,
+    suffix,
+  } = parseFileName(filename)
+  return `${getDateTimeString(stat.ctime)}_${getRandomStr()}${suffix}`
+}
 
 module.exports = {
   nmDown,
-  custom1
+  custom1,
+  obfuscation
 }

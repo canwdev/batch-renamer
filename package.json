@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "run": "node index.js"
+  },
   "dependencies": {
     "chinesenum": "^1.0.2",
     "fs-extra": "^10.0.0",

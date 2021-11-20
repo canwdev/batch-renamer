@@ -1,8 +1,8 @@
 const fs = require('fs-extra')
 const path = require('path')
 const glob = require('glob')
-const {HistoryUtil} = require('./utils')
-const renamer = require('./renamer')
+const {HistoryUtil} = require('./utils/history')
+const renameTemplates = require('./templates')
 const config = require('./config')
 
 const undoAll = () => {
@@ -29,22 +29,23 @@ const run = async () => {
     nodir: true,
     absolute: true
   })
-  files = files.map(item => {
-    return path.relative(config.basePath, item)
-  })
 
   const padLength = (files.length).toString().length
   for (let key in files) {
-    const filename = files[key]
+    const file = files[key]
+    const filename = path.relative(config.basePath, file)
 
-    const newName = renamer[config.renameType](filename, {
+    const newName = await renameTemplates[config.renameTemplate](filename, {
       padLength,
-      season: config.season
+      season: config.season,
+      basePath: config.basePath,
+      absPath: file,
+      ...config.customOptions
     })
 
     historyUtil.rename(filename, newName)
   }
-  historyUtil.saveFileSync()
+  await historyUtil.saveFileSync()
 }
 
 // undoAll()

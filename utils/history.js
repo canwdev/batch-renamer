@@ -1,5 +1,9 @@
 const fs = require('fs-extra')
 const path = require('path')
+const {
+  getDateTimeString,
+  getIncrementFilename
+} = require('./index')
 
 class HistoryUtil {
   constructor(config = {}) {
@@ -35,21 +39,22 @@ class HistoryUtil {
   }
 
   // save rename json
-  saveFileSync() {
+  async saveFileSync() {
+    let saveFilename = path.join(this.basePath, `rename_log_${getDateTimeString()}.json`)
+    saveFilename = await getIncrementFilename(saveFilename)
+
+    console.log(`History log save to ${saveFilename}`)
     if (this.dryRun) {
+      console.log('Dry run.')
       return
     }
-    fs.writeFileSync(path.join(this.basePath, `rename_log_${Date.now()}.json`), this.toString(null, 2), {
+    fs.writeFileSync(saveFilename, this.toString(null, 2), {
       encode: 'utf-8'
     })
   }
 }
 
-function padZero(num, len = 2) {
-  return num.toString().padStart(len, '0')
-}
 
 module.exports = {
   HistoryUtil,
-  padZero
 }
